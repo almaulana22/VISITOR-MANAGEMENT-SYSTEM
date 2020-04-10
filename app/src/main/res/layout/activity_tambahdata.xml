@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGreen"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents.Light.Bridge"
+    tools:context=".AddVisitorActivity">
+
+    <LinearLayout
+        android:id="@+id/lnWave"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/lnWave2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/lnWave"
+        android:background="@drawable/wave"
+        android:orientation="horizontal" />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-15dp"
+        android:src="@drawable/pegadaian2" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/lnWave2"
+        android:layout_margin="26dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="0dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvVisitor"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="25dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/imgVisitorView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:onClick="btnAmbilFoto"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/foto" />
+                </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="Nama">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNama"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nexa_bold"
+                        android:inputType="text"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="Perusahaan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPerusahaan"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nexa_bold"
+                        android:inputType="text"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="No. Telp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTelp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nexa_bold"
+                        android:inputType="number"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="Email">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nexa_bold"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="23dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/nexa_bold"
+                    android:text="Tujuan kedatangan ?"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="15sp" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="30dp">
+
+                    <com.jaredrummler.materialspinner.MaterialSpinner
+                        android:id="@+id/spTujuan"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:fontFamily="@font/nexa_bold"
+                        android:singleLine="true"
+                        android:textColor="@color/colorPrimary"
+                        app:ms_arrow_tint="@color/colorPrimary"
+                        app:ms_background_color="@color/colorGreen"
+                        app:ms_hint="P i l i h   t u j u a n"
+                        app:ms_hint_color="@color/colorPrimary" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="23dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/nexa_bold"
+                    android:text="Siapa yang anda temui ?"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="15sp" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="30dp">
+
+                    <com.jaredrummler.materialspinner.MaterialSpinner
+                        android:id="@+id/spHost"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:fontFamily="@font/nexa_bold"
+                        android:singleLine="true"
+                        android:textColor="@color/colorPrimary"
+                        app:ms_arrow_tint="@color/colorPrimary"
+                        app:ms_background_color="@color/colorGreen"
+                        app:ms_hint="P i l i h   h o s t"
+                        app:ms_hint_color="@color/colorPrimary" />
+                </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/btn_rounded"
+                    android:fontFamily="@font/nexa_bold"
+                    android:onClick="btnSimpan"
+                    android:text="S I M P A N"
+                    android:textColor="@color/colorPrimary" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorGreen">
+
+    <LinearLayout
+        android:id="@+id/lnWave"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary"/>
+    <LinearLayout
+        android:id="@+id/lnWave2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/lnWave"
+        android:orientation="horizontal"
+        android:background="@drawable/wave"/>
+    <ImageView
+        android:id="@+id/imgPegadaian"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-15dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/pegadaian2"/>
+
+    <RelativeLayout
+        android:id="@+id/rlSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lnWave2"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/bg_search">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableEnd="@drawable/ic_search"
+            android:drawableTint="@color/colorWhite"
+            android:nextFocusLeft="@id/etSearch"
+            android:nextFocusUp="@id/etSearch"
+            android:fontFamily="@font/nexa_bold"
+            android:ems="10"
+            android:singleLine="true"
+            android:hint="Cari data"
+            android:textColorHint="@color/colorWhite"
+            android:textSize="15sp"
+            android:textColor="@color/colorWhite"/>
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVisitor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rlSearch"
+        android:layout_margin="26dp"
+        android:scrollbars="vertical"/>
+</RelativeLayout>

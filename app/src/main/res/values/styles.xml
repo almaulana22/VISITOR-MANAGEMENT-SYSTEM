@@ -1,0 +1,32 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/colorWhite</item>
+        <item name="hintTextColor">@color/colorAccent</item>
+        <item name="hintAnimationEnabled">true</item>
+        <item name="boxStrokeColor">@color/colorAccent</item>
+        <item name="boxCornerRadiusBottomEnd">30dp</item>
+        <item name="boxCornerRadiusBottomStart">30dp</item>
+        <item name="boxCornerRadiusTopEnd">30dp</item>
+        <item name="boxCornerRadiusTopStart">30dp</item>
+    </style>
+
+    <style name="TextSearch" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintAnimationEnabled">false</item>
+        <item name="boxStrokeColor">@color/colorPrimary</item>
+        <item name="boxBackgroundColor">@color/colorPrimary</item>
+        <item name="boxCornerRadiusBottomEnd">30dp</item>
+        <item name="boxCornerRadiusBottomStart">30dp</item>
+        <item name="boxCornerRadiusTopEnd">30dp</item>
+        <item name="boxCornerRadiusTopStart">30dp</item>
+    </style>
+
+</resources>
