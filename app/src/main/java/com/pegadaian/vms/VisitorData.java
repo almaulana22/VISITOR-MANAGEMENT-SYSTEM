@@ -2,18 +2,24 @@ package com.pegadaian.vms;
 
 public class VisitorData {
 
-    private String itemNama, itemPerusahaan, itemTelp, itemEmail, itemTujuan, itemHost, itemFoto, key;
+    private String itemNama, itemPerusahaan, itemTelp, itemEmail, itemTujuan, itemHost, itemFoto, itemQr, itemCheckin, itemCheckout, key;
+
+    public VisitorData() {
+    }
 
     public VisitorData(String itemNama, String itemPerusahaan, String itemTelp, String itemEmail
-            , String itemFoto, String itemTujuan, String itemHost) {
+            , String itemTujuan, String itemHost, String itemCheckin, String itemCheckout, String itemFoto, String itemQr) {
 
         this.itemNama = itemNama;
         this.itemPerusahaan = itemPerusahaan;
         this.itemTelp = itemTelp;
         this.itemEmail = itemEmail;
-        this.itemFoto = itemFoto;
         this.itemTujuan = itemTujuan;
         this.itemHost = itemHost;
+        this.itemCheckin = itemCheckin;
+        this.itemCheckout = itemCheckout;
+        this.itemFoto = itemFoto;
+        this.itemQr = itemQr;
     }
 
     public String getItemNama() {
@@ -32,16 +38,28 @@ public class VisitorData {
         return itemEmail;
     }
 
-    public String getItemFoto() {
-        return itemFoto;
-    }
-
     public String getItemTujuan() {
         return itemTujuan;
     }
 
     public String getItemHost() {
         return itemHost;
+    }
+
+    public String getItemCheckin() {
+        return itemCheckin;
+    }
+
+    public String getItemCheckout() {
+        return itemCheckout;
+    }
+
+    public String getItemFoto() {
+        return itemFoto;
+    }
+
+    public String getItemQr() {
+        return itemQr;
     }
 
     public String getKey() {

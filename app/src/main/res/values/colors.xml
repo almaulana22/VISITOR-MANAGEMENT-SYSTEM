@@ -5,7 +5,8 @@
     <color name="colorAccent">#5CDB95</color>
 
     <color name="colorGreen">#DEF7E9</color>
-    <color name="colorWhite">#FFF</color>
+    <color name="colorWhite">#F4F4F4</color>
+    <color name="colorRed">#FF0000</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#DEF7E9</color>
 </resources>

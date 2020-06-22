@@ -5,36 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorGreen"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/lnWave"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/colorPrimary"
-        android:orientation="horizontal" />
-
-    <LinearLayout
-        android:id="@+id/lnWave2"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/lnWave"
-        android:background="@drawable/wave"
-        android:orientation="horizontal" />
-
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="120dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-15dp"
-        android:src="@drawable/pegadaian2" />
+    <include layout="@layout/appbar_main" />
 
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lnWave2"
+        android:layout_below="@id/appbar"
         android:layout_marginStart="32dp"
         android:layout_marginTop="26dp"
         android:fontFamily="@font/nexa_bold"

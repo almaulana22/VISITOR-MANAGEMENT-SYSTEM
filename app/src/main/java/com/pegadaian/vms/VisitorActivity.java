@@ -1,6 +1,9 @@
 package com.pegadaian.vms;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,40 +23,46 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VisitorActivity extends AppCompatActivity {
 
-    RecyclerView recyclerView;
-    List <VisitorData> visitorDataList;
-    VisitorData visitorData;
+    @BindView(R.id.rvVisitor) RecyclerView recyclerView;
+    @BindView(R.id.etSearch) EditText edtSearch;
+
+    List<VisitorData> visitorDataList;
     ProgressDialog progressDialog;
     VisitorAdapter visitorAdapter;
-    EditText edtSearch;
 
-
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visitor);
-
-        recyclerView = (RecyclerView)findViewById(R.id.rvVisitor);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(VisitorActivity.this,1);
-        recyclerView.setLayoutManager(gridLayoutManager);
-
-        edtSearch = (EditText)findViewById(R.id.etSearch);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ButterKnife.bind(this);
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading Data ....");
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+        // SET ADAPTER
         visitorDataList = new ArrayList<>();
-
-        visitorAdapter  = new VisitorAdapter(VisitorActivity.this,visitorDataList);
+        visitorAdapter = new VisitorAdapter(VisitorActivity.this, visitorDataList);
         recyclerView.setAdapter(visitorAdapter);
 
+        // CONVERTER RECYCLER VIEW
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(VisitorActivity.this, 1);
+        gridLayoutManager.setReverseLayout(true);
+        recyclerView.setLayoutManager(gridLayoutManager);
 
+        // MENDAPATKAN REFERENSI FIREBASE
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Visitor");
 
-        progressDialog.show();
-        ValueEventListener eventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+        // MENDAPATKAN DATA VISITOR DARI FIREBASE
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -64,12 +73,9 @@ public class VisitorActivity extends AppCompatActivity {
                     VisitorData visitorData = itemSnapshot.getValue(VisitorData.class);
                     visitorData.setKey(itemSnapshot.getKey());
                     visitorDataList.add(visitorData);
-
                 }
-
                 visitorAdapter.notifyDataSetChanged();
                 progressDialog.dismiss();
-
             }
 
             @Override
@@ -78,6 +84,7 @@ public class VisitorActivity extends AppCompatActivity {
             }
         });
 
+        // EDIT TEXT SEARCH
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,20 +105,22 @@ public class VisitorActivity extends AppCompatActivity {
         });
     }
 
+    // FILTER DATA UNTUK SEARCH
     private void filter(String text) {
 
-        ArrayList <VisitorData> filterList = new ArrayList<>();
+        ArrayList<VisitorData> filterList = new ArrayList<>();
 
-        for(VisitorData item: visitorDataList){
-
-            if(item.getItemNama().toLowerCase().contains(text.toLowerCase())){
-
+        for (VisitorData item : visitorDataList) {
+            if (item.getItemNama().toLowerCase().contains(text.toLowerCase())) {
                 filterList.add(item);
-
             }
         }
-
         visitorAdapter.filteredList(filterList);
+    }
 
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(VisitorActivity.this, MainActivity.class));
+        finish();
     }
 }

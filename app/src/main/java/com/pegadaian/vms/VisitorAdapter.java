@@ -19,7 +19,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VisitorAdapter extends RecyclerView.Adapter <VisitorViewHolder> {
+public class VisitorAdapter extends RecyclerView.Adapter<VisitorAdapter.VisitorViewHolder> {
 
     private Context context;
     private List<VisitorData> visitorDataList;
@@ -30,17 +30,17 @@ public class VisitorAdapter extends RecyclerView.Adapter <VisitorViewHolder> {
         this.visitorDataList = visitorDataList;
     }
 
+    // DATA VIEW HOLDER
     @Override
     public VisitorViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View mView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_visitor,viewGroup,false);
+        View mView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.view_visitor, viewGroup, false);
 
         return new VisitorViewHolder(mView);
     }
 
-
+    // MENDAPATKAN DATA VISITOR UNTUK DITAMPILKAN
     @Override
     public void onBindViewHolder(@NonNull final VisitorViewHolder visitorViewHolder, int i) {
-
 
         Glide.with(context)
                 .load(visitorDataList.get(i).getItemFoto())
@@ -49,62 +49,70 @@ public class VisitorAdapter extends RecyclerView.Adapter <VisitorViewHolder> {
         visitorViewHolder.tvNama.setText(visitorDataList.get(i).getItemNama());
         visitorViewHolder.tvPerusahaan.setText(visitorDataList.get(i).getItemPerusahaan());
         visitorViewHolder.tvTelp.setText(visitorDataList.get(i).getItemTelp());
+        visitorViewHolder.tvCheckin.setText(visitorDataList.get(i).getItemCheckin());
 
-        visitorViewHolder.cardVisitor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if (visitorViewHolder.tvCheckin.getText().toString().isEmpty()) {
+            visitorViewHolder.tvCheckin.setText("-");
+        }
 
-                Intent intent = new Intent(context,DetailVisitorActivity.class);
-                intent.putExtra("Image",visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemFoto());
-                intent.putExtra("Nama",visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemNama());
-                intent.putExtra("Perusahaan",visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemPerusahaan());
-                intent.putExtra("Telp",visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemTelp());
-                intent.putExtra("keyValue",visitorDataList.get(visitorViewHolder.getAdapterPosition()).getKey());
-                context.startActivity(intent);
-            }
+        visitorViewHolder.cardVisitor.setOnClickListener(view -> {
+
+            Intent intent = new Intent(context, DetailVisitorActivity.class);
+            intent.putExtra("Foto", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemFoto());
+            intent.putExtra("Qr", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemQr());
+            intent.putExtra("Nama", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemNama());
+            intent.putExtra("Perusahaan", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemPerusahaan());
+            intent.putExtra("Telp", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemTelp());
+            intent.putExtra("Email", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemEmail());
+            intent.putExtra("Checkin", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemCheckin());
+            intent.putExtra("Checkout", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getItemCheckout());
+            intent.putExtra("keyValue", visitorDataList.get(visitorViewHolder.getAdapterPosition()).getKey());
+            context.startActivity(intent);
         });
-
-        setAnimation(visitorViewHolder.itemView,i);
-
+        setAnimation(visitorViewHolder.itemView, i);
     }
 
-    public void setAnimation(View viewToAnimate, int position ){
+    // ANIMASI LOAD DATA
+    public void setAnimation(View viewToAnimate, int position) {
 
-        if(position> lastPosition){
+        if (position > lastPosition) {
 
-            ScaleAnimation animation = new ScaleAnimation(0.0f,1.0f,0.0f,1.0f,
-                    Animation.RELATIVE_TO_SELF,0.5f,
-                    Animation.RELATIVE_TO_SELF,0.5f);
-            animation.setDuration(1500);
+            ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            animation.setDuration(500);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
         }
     }
 
     @Override
-    public int getItemCount() { return visitorDataList.size(); }
+    public int getItemCount() {
+        return visitorDataList.size();
+    }
 
     public void filteredList(ArrayList<VisitorData> filterList) {
 
         visitorDataList = filterList;
         notifyDataSetChanged();
     }
-}
 
-class VisitorViewHolder extends RecyclerView.ViewHolder {
+    // CLASS VIEW HOLDER
+    public class VisitorViewHolder extends RecyclerView.ViewHolder {
 
-    ImageView imgVisitor;
-    TextView tvNama, tvPerusahaan, tvTelp, tvCheckin;
-    CardView cardVisitor;
+        ImageView imgVisitor;
+        TextView tvNama, tvPerusahaan, tvTelp, tvCheckin;
+        CardView cardVisitor;
 
-    public VisitorViewHolder(@NonNull View itemView) {
-        super(itemView);
+        public VisitorViewHolder(@NonNull View itemView) {
+            super(itemView);
 
-        imgVisitor = itemView.findViewById(R.id.imgVisitor);
-        tvNama = itemView.findViewById(R.id.tvNama);
-        tvPerusahaan = itemView.findViewById(R.id.tvPerusahaan);
-        tvTelp = itemView.findViewById(R.id.tvTelp);
-        tvCheckin = itemView.findViewById(R.id.tvCheckin);
-        cardVisitor = itemView.findViewById(R.id.cvVisitor);
+            imgVisitor = itemView.findViewById(R.id.imgVisitor);
+            tvNama = itemView.findViewById(R.id.tvNama);
+            tvPerusahaan = itemView.findViewById(R.id.tvPerusahaan);
+            tvTelp = itemView.findViewById(R.id.tvTelp);
+            tvCheckin = itemView.findViewById(R.id.tvCheckin);
+            cardVisitor = itemView.findViewById(R.id.cvVisitor);
+        }
     }
 }

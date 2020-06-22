@@ -1,19 +1,18 @@
 package com.pegadaian.vms;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.renderscript.Sampler;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,58 +23,75 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
-import com.bumptech.glide.disklrucache.DiskLruCache;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.Member;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-import butterknife.OnItemSelected;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 
 public class AddVisitorActivity extends AppCompatActivity {
 
-    ImageView visitorImage;
-    EditText etNama, etPerusahaan, etTelp, etEmail;
-    MaterialSpinner spTujuan, spHost;
-    String dataFoto;
+    @BindView(R.id.imgVisitorView) ImageView visitorImage;
+    @BindView(R.id.imgQr) ImageView qrImage;
+    @BindView(R.id.etNama) EditText etNama;
+    @BindView(R.id.etPerusahaan) EditText etPerusahaan;
+    @BindView(R.id.etTelp) EditText etTelp;
+    @BindView(R.id.etEmail) EditText etEmail;
+    @BindView(R.id.spTujuan) MaterialSpinner spTujuan;
+    @BindView(R.id.spHost) MaterialSpinner spHost;
+    @BindView(R.id.tvAddCheck) TextView txtAddCheck;
 
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQ_CODE = 102;
-    private StorageReference reference;
+    StorageReference reference;
+    ProgressDialog progressDialog;
+    String dataFoto, dataQr;
+    String fileFoto = UUID.randomUUID() + ".jpg";
+    int first = 0;
+    int last = 1;
 
+    // MENDAPATKAN TANGGAL & WAKTU TERKINI
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    String myCurrentDateTime = simpleDateFormat.format(new Date());
+
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tambahdata);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        ButterKnife.bind(this);
 
-        visitorImage = findViewById(R.id.imgVisitorView);
-        etNama = findViewById(R.id.etNama);
-        etPerusahaan = findViewById(R.id.etPerusahaan);
-        etTelp = findViewById(R.id.etTelp);
-        etEmail = findViewById(R.id.etEmail);
-        spTujuan = findViewById(R.id.spTujuan);
-        spHost = findViewById(R.id.spHost);
-
-        // MENDAPATKAN REFERENSI FIREBASE
         reference = FirebaseStorage.getInstance().getReference();
+        progressDialog = new ProgressDialog(this);
+
+        // SET VALUE AWAL
+        txtAddCheck.setText(null);
+        visitorImage.setId(first);
+
+        // CUSTOM TOAST
+        Toasty.Config.getInstance()
+                .setToastTypeface(ResourcesCompat.getFont(this, R.font.nexa_bold))
+                .setTextSize(15)
+                .apply();
 
         // DAFTAR NAMA HOST
         List<String> tujuan = new ArrayList<>();
@@ -113,12 +129,7 @@ public class AddVisitorActivity extends AppCompatActivity {
     // BUTTON AMBIL FOTO
     public void btnAmbilFoto(View view) {
 
-        askCameraPermissions();
-    }
-
-    // MENDAPATKAN PERMISSION KAMERA
-    private void askCameraPermissions() {
-
+        // MENDAPATKAN PERMISSION KAMERA
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERM_CODE);
         } else {
@@ -135,13 +146,14 @@ public class AddVisitorActivity extends AppCompatActivity {
             if (grantResults.length < 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(this, "Izin Kamera Dibutuhkan!", Toast.LENGTH_SHORT).show();
+                Toasty.error(AddVisitorActivity.this, "Izin kamera dibutuhkan",
+                        Toast.LENGTH_SHORT, true).show();
             }
         }
     }
 
     // MEMBUKA KAMERA
-    private void openCamera() {
+    public void openCamera() {
 
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(camera, CAMERA_REQ_CODE);
@@ -156,46 +168,115 @@ public class AddVisitorActivity extends AppCompatActivity {
 
             Bitmap imageVisitor = (Bitmap) data.getExtras().get("data");
             visitorImage.setImageBitmap(imageVisitor);
+            visitorImage.setId(last);
         } else {
-            Toast.makeText(this, "Foto Belum Diambil!", Toast.LENGTH_SHORT).show();
+            Toasty.warning(AddVisitorActivity.this, "Foto belum diambil",
+                    Toast.LENGTH_SHORT, true).show();
         }
     }
 
     // BUTTON SIMPAN
     public void btnSimpan(View view) {
 
-        uploadImage();
+        if (visitorImage.getId() == 0) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else if (etNama.getText().toString().isEmpty()) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else if (etPerusahaan.getText().toString().isEmpty()) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else if (etTelp.getText().toString().isEmpty()) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else if (etEmail.getText().toString().isEmpty()) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();;
+        } else if (spTujuan.getText().toString().equals("P i l i h   t u j u a n")) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else if (spHost.getText().toString().equals("P i l i h   h o s t")) {
+            Toasty.error(AddVisitorActivity.this, "Data belum lengkap",
+                    Toast.LENGTH_SHORT, true).show();
+        } else {
+            uploadImageQr();
+        }
     }
 
-    // UPLOAD GAMBAR KE FIREBASE
-    public void uploadImage() {
+    // UPLOAD QR KE FIREBASE
+    public void uploadImageQr() {
+
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        // MEMBUAT QR DARI TANGGAL
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = qrCodeWriter.encode(myCurrentDateTime, BarcodeFormat.QR_CODE, 300, 300);
+            Bitmap bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.RGB_565);
+
+            // MENGUBAH UKURAN BITMAP QR
+            for (int x = 0; x < 300; x++) {
+                for (int y = 0; y < 300; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+            qrImage.setImageBitmap(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
 
         // MENDAPATKAN DATA GAMBAR DARI IMAGE VIEW
-        visitorImage.setDrawingCacheEnabled(true);
-        visitorImage.buildDrawingCache();
-        Bitmap bitmap = ((BitmapDrawable) visitorImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap bitmapQr = ((BitmapDrawable) qrImage.getDrawable()).getBitmap();
+        ByteArrayOutputStream streamQr = new ByteArrayOutputStream();
 
         // KOMPRESS BITMAP KE JPG
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] bytes = stream.toByteArray();
+        bitmapQr.compress(Bitmap.CompressFormat.JPEG, 100, streamQr);
+        byte[] bytesQr = streamQr.toByteArray();
 
         // MENENTUKAN FILE PENYIMPANAN
-        String namaFile = UUID.randomUUID() + ".jpg";
-        String fotoPath = "VisitorImage/" + namaFile;
-        UploadTask uploadTask = reference.child(fotoPath).putBytes(bytes);
+        String fotoPath = "QrImage/" + fileFoto;
+        UploadTask uploadTaskQr = reference.child(fotoPath).putBytes(bytesQr);
 
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Menambahkan Data....");
-        progressDialog.show();
+        uploadTaskQr.addOnSuccessListener(taskSnapshot -> {
+
+            Task <Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+            while (!uriTask.isComplete());
+            Uri urlImage = uriTask.getResult();
+            dataQr = urlImage.toString();
+            uploadImageVisitor();
+        }).addOnFailureListener(e -> Toasty.error(AddVisitorActivity.this, "QR gagal disimpan",
+                Toast.LENGTH_SHORT, true).show());
+    }
+
+    // UPLOAD FOTO VISITOR KE FIREBASE
+    public void uploadImageVisitor() {
+
+        // MENDAPATKAN DATA GAMBAR DARI IMAGE VIEW
+        Bitmap bitmapVisitor = ((BitmapDrawable) visitorImage.getDrawable()).getBitmap();
+        ByteArrayOutputStream streamVisitor = new ByteArrayOutputStream();
+
+        // KOMPRESS BITMAP KE JPG
+        bitmapVisitor.compress(Bitmap.CompressFormat.JPEG, 100, streamVisitor);
+        byte[] bytesVisitor = streamVisitor.toByteArray();
+
+        // MENENTUKAN FILE PENYIMPANAN
+        String fotoPath = "VisitorImage/" + fileFoto;
+        UploadTask uploadTask = reference.child(fotoPath).putBytes(bytesVisitor);
 
         uploadTask.addOnSuccessListener(taskSnapshot -> {
 
+            Task <Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+            while (!uriTask.isComplete());
+            Uri urlImage = uriTask.getResult();
+            dataFoto = urlImage.toString();
             uploadVisitor();
             progressDialog.dismiss();
-        }).addOnFailureListener(e -> progressDialog.setMessage("Gagal Menambahkan Data!"));
+        }).addOnFailureListener(e -> Toasty.error(AddVisitorActivity.this, "Foto gagal disimpan",
+                Toast.LENGTH_SHORT, true).show());
     }
-
 
     // UPLOAD DATA VISITOR KE FIREBASE
     public void uploadVisitor() {
@@ -205,24 +286,31 @@ public class AddVisitorActivity extends AppCompatActivity {
                 etPerusahaan.getText().toString(),
                 etTelp.getText().toString(),
                 etEmail.getText().toString(),
-                dataFoto,
                 spTujuan.getText().toString(),
-                spHost.getText().toString()
+                spHost.getText().toString(),
+                txtAddCheck.getText().toString(),
+                txtAddCheck.getText().toString(),
+                dataFoto,
+                dataQr
         );
-
-        String myCurrentDateTime = DateFormat.getDateTimeInstance()
-                .format(Calendar.getInstance().getTime());
 
         FirebaseDatabase.getInstance().getReference("Visitor")
                 .child(myCurrentDateTime).setValue(visitorData).addOnCompleteListener(task -> {
 
             if (task.isSuccessful()) {
 
-                Intent pindah = new Intent(AddVisitorActivity.this, MainActivity.class);
-                startActivity(pindah);
-                Toast.makeText(AddVisitorActivity.this, "Data Visitor Tersimpan", Toast.LENGTH_SHORT).show();
-                AddVisitorActivity.this.finish();
+                startActivity(new Intent(AddVisitorActivity.this, MainActivity.class));
+                Toasty.success(AddVisitorActivity.this, "Data visitor tersimpan",
+                        Toast.LENGTH_SHORT, true).show();
+                finish();
             }
-        }).addOnFailureListener(e -> Toast.makeText(AddVisitorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toasty.error(AddVisitorActivity.this, "Data gagal disimpan",
+                Toast.LENGTH_SHORT, true).show());
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(AddVisitorActivity.this, MainActivity.class));
+        finish();
     }
 }
